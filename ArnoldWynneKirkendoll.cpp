@@ -192,8 +192,6 @@ void runSpellCheck(const std::string& dictionaryPath, const std::string& inputPa
 }
 // ----------------- P8.7 Cipher from Keyword -----------------
 
-
-
 // Keep only letters and uppercase them
 std::string normalizeKeyword(const std::string& keyword) {
     std::string out;
@@ -204,8 +202,6 @@ std::string normalizeKeyword(const std::string& keyword) {
     }
     return out;
 }
-
-
 
 // Build the cipher order: unique letters from keyword, then Z down to A skipping used.
 std::string buildKeyOrder(const std::string& keyword) {
@@ -232,14 +228,10 @@ std::string buildKeyOrder(const std::string& keyword) {
     return order; // length should be 26
 }
 
-
-
 // Fill encMap where encMap[i] is cipher for plain 'A' + i
 void makeEncMap(const std::string& keyOrder, char encMap[26]) {
     for (int i = 0; i < 26; ++i) encMap[i] = keyOrder[i];
 }
-
-
 
 // Fill decMap where decMap[j] is plain letter for cipher 'A' + j
 void makeDecMap(const std::string& keyOrder, char decMap[26]) {
@@ -248,8 +240,6 @@ void makeDecMap(const std::string& keyOrder, char decMap[26]) {
         decMap[j] = static_cast<char>('A' + i);
     }
 }
-
-
 
 // Encrypt one character. Keep case.
 char encryptChar(char ch, const char encMap[26]) {
@@ -265,8 +255,6 @@ char encryptChar(char ch, const char encMap[26]) {
     return ch;
 }
 
-
-
 // Decrypt one character. Keep case.
 char decryptChar(char ch, const char decMap[26]) {
     unsigned char u = static_cast<unsigned char>(ch);
@@ -281,11 +269,7 @@ char decryptChar(char ch, const char decMap[26]) {
     return ch;
 }
 
-
-
 enum class CryptMode { Encrypt, Decrypt };
-
-
 
 void runCrypt(CryptMode mode, const std::string& keyword,
               const std::string& inputPath, const std::string& outputPath) {
@@ -327,6 +311,7 @@ void runCrypt(CryptMode mode, const std::string& keyword,
 
     std::cout << "Done. Output saved to: " << outputPath << "\n";
 }
+
 
 void printHelp() {
 std::cout &lt;&lt; &quot;Usage:\n&quot;;
