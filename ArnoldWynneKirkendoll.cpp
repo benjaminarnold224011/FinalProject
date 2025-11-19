@@ -311,11 +311,10 @@ void runCrypt(CryptMode mode, const std::string& keyword,
 
     std::cout << "Done. Output saved to: " << outputPath << "\n";
 }
-
+// ----------------- Command line and prompts -----------------
 
 void printHelp() {
 std::cout &lt;&lt; &quot;Usage:\n&quot;;
-
 std::cout &lt;&lt; &quot; assign5 spell &lt;dictionary_path&gt; &lt;input_path&gt;\n&quot;;
 std::cout &lt;&lt; &quot; assign5 crypt -k&lt;KEYWORD&gt; [-e | -d] &lt;input_path&gt; &lt;output_path&gt;\n&quot;;
 std::cout &lt;&lt; &quot;Examples:\n&quot;;
@@ -339,11 +338,11 @@ if (choice == 1) {
 std::string dictionaryPath, inputPath;
 std::cout &lt;&lt; &quot;Enter dictionary file path: &quot;;
 std::getline(std::cin, dictionaryPath);
+
 std::cout &lt;&lt; &quot;Enter input file path to check: &quot;;
 std::getline(std::cin, inputPath);
 runSpellCheck(dictionaryPath, inputPath);
 return 0;
-
 } else if (choice == 2) {
 std::string keyword, inputPath, outputPath;
 std::cout &lt;&lt; &quot;Encrypt or Decrypt (E or D): &quot;;
@@ -371,7 +370,6 @@ return 0;
 std::string command = argv[1];
 if (command == &quot;spell&quot;) {
 if (argc &gt;= 4) {
-
 runSpellCheck(argv[2], argv[3]);
 } else {
 std::cerr &lt;&lt; &quot;Not enough arguments for spell.\n&quot;;
@@ -395,11 +393,11 @@ mode = CryptMode::Encrypt;
 mode = CryptMode::Decrypt;
 } else {
 inputPath = a;
+
 ++i;
 if (i &lt; argc) outputPath = argv[i];
 break;
 }
-
 }
 
 if (keyword.empty() || inputPath.empty() || outputPath.empty()) {
@@ -418,3 +416,27 @@ return 0;
 }
 
 /*
+Reflection
+We kept prompts simple and clear. We used a lowercase conversion and a basic
+cleanWord
+so punctuation does not cause false misses in the spell check.
+We used arrays of length 26 for letter maps and a vector for dictionary words.
+
+The helper functions show pass by value and pass by reference results where it
+makes sense.
+
+Teamwork Note
+All group members contributed to design, testing, and review.
+The peer evaluation form is submitted separately.
+
+Sample runs
+assign5 spell /usr/share/dict/words essay.txt
+assign5 crypt -kFEATHER -e plain.txt enc.txt
+assign5 crypt -kFEATHER -d enc.txt plain_out.txt
+
+APA Citation
+Horstmann, C. S. (2017). Big C++: Late Objects, Enhanced eText (3rd ed.).
+Wiley Global Education US.
+*/
+
+
