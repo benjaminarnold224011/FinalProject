@@ -312,132 +312,128 @@ void runCrypt(CryptMode mode, const std::string& keyword,
 
     std::cout << "Done. Output saved to: " << outputPath << "\n";
 }
+
 // ----------------- Command line and prompts -----------------
 
 void printHelp() {
-std::cout &lt;&lt; &quot;Usage:\n&quot;;
-std::cout &lt;&lt; &quot; assign5 spell &lt;dictionary_path&gt; &lt;input_path&gt;\n&quot;;
-std::cout &lt;&lt; &quot; assign5 crypt -k&lt;KEYWORD&gt; [-e | -d] &lt;input_path&gt; &lt;output_path&gt;\n&quot;;
-std::cout &lt;&lt; &quot;Examples:\n&quot;;
-std::cout &lt;&lt; &quot; assign5 spell /usr/share/dict/words essay.txt\n&quot;;
-std::cout &lt;&lt; &quot; assign5 crypt -kFEATHER -e plain.txt enc.txt\n&quot;;
-std::cout &lt;&lt; &quot; assign5 crypt -kFEATHER -d enc.txt plain_out.txt\n&quot;;
+    std::cout << "Usage:\n";
+    std::cout << "  assign5 spell <dictionary_path> <input_path>\n";
+    std::cout << "  assign5 crypt -k<KEYWORD> [-e | -d] <input_path> <output_path>\n";
+    std::cout << "Examples:\n";
+    std::cout << "  assign5 spell /usr/share/dict/words essay.txt\n";
+    std::cout << "  assign5 crypt -kFEATHER -e plain.txt enc.txt\n";
+    std::cout << "  assign5 crypt -kFEATHER -d enc.txt plain_out.txt\n";
 }
 
 int main(int argc, char* argv[]) {
-// No arguments. Show menu and ask for inputs.
-if (argc &lt;= 1) {
-std::cout &lt;&lt; &quot;Assignment 5 Menu\n&quot;;
-std::cout &lt;&lt; &quot; 1) Spell check a file\n&quot;;
-std::cout &lt;&lt; &quot; 2) Encrypt or decrypt a file\n&quot;;
-std::cout &lt;&lt; &quot;Enter 1 or 2: &quot;;
-int choice = 0;
-std::cin &gt;&gt; choice;
-std::cin.ignore(std::numeric_limits&lt;std::streamsize&gt;::max(), &#39;\n&#39;);
+    // No arguments. Show menu and ask for inputs.
+    if (argc <= 1) {
+        std::cout << "Assignment 5 Menu\n";
+        std::cout << "  1) Spell check a file\n";
+        std::cout << "  2) Encrypt or decrypt a file\n";
+        std::cout << "Enter 1 or 2: ";
+        int choice = 0;
+        std::cin >> choice;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-if (choice == 1) {
-std::string dictionaryPath, inputPath;
-std::cout &lt;&lt; &quot;Enter dictionary file path: &quot;;
-std::getline(std::cin, dictionaryPath);
+        if (choice == 1) {
+            std::string dictionaryPath, inputPath;
+            std::cout << "Enter dictionary file path: ";
+            std::getline(std::cin, dictionaryPath);
+            std::cout << "Enter input file path to check: ";
+            std::getline(std::cin, inputPath);
+            runSpellCheck(dictionaryPath, inputPath);
+            return 0;
+        } else if (choice == 2) {
+            std::string keyword, inputPath, outputPath;
+            std::cout << "Encrypt or Decrypt (E or D): ";
+            char modeChar = 'E';
+            std::cin >> modeChar;
+            CryptMode mode = (modeChar == 'D' || modeChar == 'd') ? CryptMode::Decrypt : CryptMode::Encrypt;
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-std::cout &lt;&lt; &quot;Enter input file path to check: &quot;;
-std::getline(std::cin, inputPath);
-runSpellCheck(dictionaryPath, inputPath);
-return 0;
-} else if (choice == 2) {
-std::string keyword, inputPath, outputPath;
-std::cout &lt;&lt; &quot;Encrypt or Decrypt (E or D): &quot;;
-char modeChar = &#39;E&#39;;
-std::cin &gt;&gt; modeChar;
-CryptMode mode = (modeChar == &#39;D&#39; || modeChar == &#39;d&#39;) ? CryptMode::Decrypt
-: CryptMode::Encrypt;
-std::cin.ignore(std::numeric_limits&lt;std::streamsize&gt;::max(), &#39;\n&#39;);
+            std::cout << "Enter keyword: ";
+            std::getline(std::cin, keyword);
+            std::cout << "Enter input file path: ";
+            std::getline(std::cin, inputPath);
+            std::cout << "Enter output file path: ";
+            std::getline(std::cin, outputPath);
+            runCrypt(mode, keyword, inputPath, outputPath);
+            return 0;
+        } else {
+            printHelp();
+            return 0;
+        }
+    }
 
-std::cout &lt;&lt; &quot;Enter keyword: &quot;;
-std::getline(std::cin, keyword);
-std::cout &lt;&lt; &quot;Enter input file path: &quot;;
-std::getline(std::cin, inputPath);
-std::cout &lt;&lt; &quot;Enter output file path: &quot;;
-std::getline(std::cin, outputPath);
-runCrypt(mode, keyword, inputPath, outputPath);
-return 0;
-} else {
-printHelp();
-return 0;
-}
-}
+    // With arguments.
+    std::string command = argv[1];
+    if (command == "spell") {
+        if (argc >= 4) {
+            runSpellCheck(argv[2], argv[3]);
+        } else {
+            std::cerr << "Not enough arguments for spell.\n";
+            printHelp();
+        }
+        return 0;
+    }
+    else if (command == "crypt") {
+        std::string keyword;
+        CryptMode mode = CryptMode::Encrypt;
+        std::string inputPath, outputPath;
 
-// With arguments.
-std::string command = argv[1];
-if (command == &quot;spell&quot;) {
-if (argc &gt;= 4) {
-runSpellCheck(argv[2], argv[3]);
-} else {
-std::cerr &lt;&lt; &quot;Not enough arguments for spell.\n&quot;;
-printHelp();
-}
-return 0;
-}
-else if (command == &quot;crypt&quot;) {
-std::string keyword;
-CryptMode mode = CryptMode::Encrypt;
-std::string inputPath, outputPath;
+        int i = 2;
+        for (; i < argc; ++i) {
+            std::string a = argv[i];
+            if (a.rfind("-k", 0) == 0) {
+                keyword = a.substr(2);
+            } else if (a == "-e") {
+                mode = CryptMode::Encrypt;
+            } else if (a == "-d") {
+                mode = CryptMode::Decrypt;
+            } else {
+                inputPath = a;
+                ++i;
+                if (i < argc) outputPath = argv[i];
+                break;
+            }
+        }
 
-int i = 2;
-for (; i &lt; argc; ++i) {
-std::string a = argv[i];
-if (a.rfind(&quot;-k&quot;, 0) == 0) {
-keyword = a.substr(2);
-} else if (a == &quot;-e&quot;) {
-mode = CryptMode::Encrypt;
-} else if (a == &quot;-d&quot;) {
-mode = CryptMode::Decrypt;
-} else {
-inputPath = a;
+        if (keyword.empty() || inputPath.empty() || outputPath.empty()) {
+            std::cerr << "Missing arguments for crypt.\n";
+            printHelp();
+            return 0;
+        }
 
-++i;
-if (i &lt; argc) outputPath = argv[i];
-break;
-}
-}
-
-if (keyword.empty() || inputPath.empty() || outputPath.empty()) {
-std::cerr &lt;&lt; &quot;Missing arguments for crypt.\n&quot;;
-printHelp();
-return 0;
-}
-
-runCrypt(mode, keyword, inputPath, outputPath);
-return 0;
-}
-else {
-printHelp();
-return 0;
-}
+        runCrypt(mode, keyword, inputPath, outputPath);
+        return 0;
+    }
+    else {
+        printHelp();
+        return 0;
+    }
 }
 
 /*
 Reflection
-We kept prompts simple and clear. We used a lowercase conversion and a basic
-cleanWord
-so punctuation does not cause false misses in the spell check.
-We used arrays of length 26 for letter maps and a vector for dictionary words.
-
-The helper functions show pass by value and pass by reference results where it
-makes sense.
+    We kept prompts simple and clear. We used a lowercase conversion and a basic cleanWord
+    so punctuation does not cause false misses in the spell check.
+    We used arrays of length 26 for letter maps and a vector for dictionary words.
+    The helper functions show pass by value and pass by reference results where it makes sense.
 
 Teamwork Note
-All group members contributed to design, testing, and review.
-The peer evaluation form is submitted separately.
+    All group members contributed to design, testing, and review.
+    The peer evaluation form is submitted separately.
 
 Sample runs
-assign5 spell /usr/share/dict/words essay.txt
-assign5 crypt -kFEATHER -e plain.txt enc.txt
-assign5 crypt -kFEATHER -d enc.txt plain_out.txt
+    assign5 spell /usr/share/dict/words essay.txt
+    assign5 crypt -kFEATHER -e plain.txt enc.txt
+    assign5 crypt -kFEATHER -d enc.txt plain_out.txt
 
 APA Citation
-Horstmann, C. S. (2017). Big C++: Late Objects, Enhanced eText (3rd ed.).
-Wiley Global Education US.
+    Horstmann, C. S. (2017). Big C++: Late Objects, Enhanced eText (3rd ed.).
+    Wiley Global Education US.
 */
+
 
 
