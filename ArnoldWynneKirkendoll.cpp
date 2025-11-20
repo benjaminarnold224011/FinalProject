@@ -190,6 +190,7 @@ void runSpellCheck(const std::string& dictionaryPath, const std::string& inputPa
         }
     }
 }
+
 // ----------------- P8.7 Cipher from Keyword -----------------
 
 // Keep only letters and uppercase them
